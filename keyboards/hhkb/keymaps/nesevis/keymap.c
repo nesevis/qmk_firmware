@@ -8,8 +8,13 @@
 
 // Tap Dance Declarations
 enum {
-  TD_LBRC_LPAR = 0,
-  TD_RBRC_RPAR = 1,
+  TD_LBRC_LPRN = 0,
+  TD_RBRC_RPRN = 1,
+  TD_RABK_FSHARP_PIPE = 2,
+};
+
+enum {
+  M_NORWEGIAN_AE = 2
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -32,9 +37,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [BASE] = LAYOUT( //  default layer
         KC_ESC, KC_1, KC_2, KC_3, KC_4, KC_5, KC_6, KC_7, KC_8, KC_9, KC_0, KC_MINS, KC_EQL, KC_BSLS, KC_GRV,
-        KC_TAB, KC_Q, KC_W, KC_E, KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, KC_LBRC, KC_RBRC, KC_BSPC,
+        KC_TAB, KC_Q, KC_W, M(M_NORWEGIAN_AE), KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, TD(TD_LBRC_LPRN), TD(TD_RBRC_RPRN), KC_BSPC,
         KC_LCTL, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, KC_SCLN, KC_QUOT, KC_ENT,
-        KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, KC_COMM, KC_DOT, KC_SLSH, KC_RSFT, MO(HHKB),
+        KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, KC_COMM, TD(TD_RABK_FSHARP_PIPE), KC_SLSH, KC_RSFT, MO(HHKB),
         KC_LALT, KC_LGUI, /*        */ KC_SPC, KC_RGUI, KC_RALT),
 
     /* Layer HHKB: HHKB mode (HHKB Fn)
@@ -61,29 +66,59 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_PPLS, KC_PMNS, KC_END, KC_PGDN, KC_DOWN, KC_TRNS, KC_TRNS,
         KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS)};
 
+bool mod_down(uint16_t key_code)
+{
+  // return (mods && ((mods & MOD_BIT(key_code)) == mods) && (biton32(layer_state) == _BASE || biton32(layer_state) == _TTCAPS));
+  // return (mods && ((mods & MOD_BIT(key_code)) == mods));
+  return keyboard_report->mods & MOD_BIT(key_code);          // relax timing on home row modifiers
+}
+
 const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
 {
     // MACRODOWN only works in this function
+    bool pressed = record->event.pressed;
+    bool altDown = mod_down(KC_RALT) || mod_down(KC_LALT);
     switch (id)
     {
-    case 0:
-        if (record->event.pressed)
-        {
-            register_code(KC_RSFT);
-        }
-        else
-        {
-            unregister_code(KC_RSFT);
-        }
-        break;
+    case HHKB:
+      pressed
+        ? register_code(KC_RSFT)
+        : unregister_code(KC_RSFT);
+      break;
+    case M_NORWEGIAN_AE:
+      pressed
+        ? register_code(altDown ? KC_QUOT : KC_E)
+        : unregister_code(altDown ? KC_QUOT : KC_E);
+      break;
     }
     return MACRO_NONE;
 };
 
+void fsharp_pipe(qk_tap_dance_state_t *state, void *user_data) {
+  switch (state->count) {
+  case 1:
+    register_code(KC_DOT); unregister_code(KC_DOT);
+    break;
+  case 2:
+    if (mod_down(KC_LSHIFT) || mod_down(KC_RSHIFT))
+    {
+      // Fsharp |> pipe character
+      register_code(KC_BSLS); unregister_code(KC_BSLS); register_code(KC_DOT); unregister_code(KC_DOT);
+    }
+    else
+    {
+      // Just two dots.
+      register_code(KC_DOT); unregister_code(KC_DOT); register_code(KC_DOT); unregister_code(KC_DOT);
+    }
+
+    break;
+  }
+}
+
 qk_tap_dance_action_t tap_dance_actions[] = {
     // Tap once for Esc, twice for Caps Lock
-    [TD_Z_LCTL] = ACTION_TAP_DANCE_DOUBLE(KC_Z, KC_LCTL),
-    [TD_X_LGUI] = ACTION_TAP_DANCE_DOUBLE(KC_X, KC_LGUI),
-    [TD_C_LALT] = ACTION_TAP_DANCE_DOUBLE(KC_C, KC_LALT),
-    [TD_A_TAB]  = ACTION_TAP_DANCE_DOUBLE(KC_A, KC_TAB),
-    [TD_Q_ESC]  = ACTION_TAP_DANCE_DOUBLE(KC_Q, KC_ESC)};
+    [TD_LBRC_LPRN] = ACTION_TAP_DANCE_DOUBLE(KC_LBRC, KC_LPRN),
+    [TD_RBRC_RPRN] = ACTION_TAP_DANCE_DOUBLE(KC_RBRC, KC_RPRN),
+    [TD_RABK_FSHARP_PIPE] = ACTION_TAP_DANCE_FN(fsharp_pipe),
+
+};
