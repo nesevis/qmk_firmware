@@ -67,7 +67,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_CAPS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_PSCR, KC_SLCK, KC_PAUS, KC_UP, KC_TRNS, KC_BSPC,
         KC_TRNS, KC_VOLD, KC_VOLU, KC_MUTE, KC_TRNS, KC_TRNS, KC_PAST, KC_PSLS, KC_HOME, KC_PGUP, KC_LEFT, KC_RGHT, KC_PENT,
         KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_PPLS, KC_PMNS, KC_END, KC_PGDN, KC_DOWN, KC_TRNS, KC_TRNS,
-        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS)};
+        KC_TRNS, KC_TRNS, KC_PGDN, KC_TRNS, KC_TRNS)};
 
 bool mod_down(uint16_t key_code)
 {
@@ -137,7 +137,7 @@ void fsharp_pipe(qk_tap_dance_state_t *state, void *user_data) {
     }
     else
     {
-      // Just two dots.
+      // Just two dots. TODO: Is there a way to return false, so as not to have to return this?
       register_code(KC_DOT); unregister_code(KC_DOT); register_code(KC_DOT); unregister_code(KC_DOT);
     }
 
