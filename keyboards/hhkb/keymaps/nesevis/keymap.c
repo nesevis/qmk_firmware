@@ -2,9 +2,15 @@
  * default HHKB Layout
  */
 #include QMK_KEYBOARD_H
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
+
+#define _______ KC_TRNS
 
 #define BASE 0
 #define HHKB 1
+#define MOUS 2
 
 // Tap Dance Declarations
 enum {
@@ -17,7 +23,7 @@ enum {
   M_NORWEGIAN_AE = 2,
   M_ACCENT_MOVED = 3,
   M_SHFT_BSPC_IS_DELETE = 4,
-  M_ESC_IS_GRAVE_WITH_CMD = 5
+  M_ESC_IS_GRAVE_WITH_CMD = 5,
 };
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -43,7 +49,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TAB, KC_Q, KC_W, M(M_NORWEGIAN_AE), KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, TD(TD_LBRC_LPRN), TD(TD_RBRC_RPRN), M(M_SHFT_BSPC_IS_DELETE),
         KC_LCTL, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, KC_SCLN, M(M_ACCENT_MOVED), KC_ENT,
         KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, KC_COMM, TD(TD_RABK_FSHARP_PIPE), KC_SLSH, KC_RSFT, MO(HHKB),
-        KC_LALT, KC_LGUI, /*        */ KC_SPC, KC_RGUI, KC_RALT),
+        KC_LALT, KC_LGUI, /*        */ LT(MOUS, KC_SPC), KC_RGUI, KC_RALT),
 
     /* Layer HHKB: HHKB mode (HHKB Fn)
       |------+-----+-----+-----+----+----+----+----+-----+-----+-----+-----+-------+-------+-----|
@@ -64,25 +70,83 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [HHKB] = LAYOUT(
         KC_PWR, KC_F1, KC_F2, KC_F3, KC_F4, KC_F5, KC_F6, KC_F7, KC_F8, KC_F9, KC_F10, KC_F11, KC_F12, KC_INS, KC_DEL,
-        KC_CAPS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_PSCR, KC_SLCK, KC_PAUS, KC_UP, KC_TRNS, KC_BSPC,
-        KC_TRNS, KC_VOLD, KC_VOLU, KC_MUTE, KC_TRNS, KC_TRNS, KC_PAST, KC_PSLS, KC_HOME, KC_PGUP, KC_LEFT, KC_RGHT, KC_PENT,
-        KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_TRNS, KC_PPLS, KC_PMNS, KC_END, KC_PGDN, KC_DOWN, KC_TRNS, KC_TRNS,
-        KC_TRNS, KC_TRNS, KC_PGDN, KC_TRNS, KC_TRNS)};
+        KC_CAPS, _______, _______, _______, _______, _______, _______, _______, KC_PSCR, KC_SLCK, KC_PAUS, KC_UP, _______, KC_BSPC,
+        _______, KC_VOLD, KC_VOLU, KC_MUTE, _______, _______, KC_PAST, KC_PSLS, KC_HOME, KC_PGUP, KC_LEFT, KC_RGHT, KC_PENT,
+        _______, _______, _______, _______, _______, _______, KC_PPLS, KC_PMNS, KC_END, KC_PGDN, KC_DOWN, _______, _______,
+        _______, _______, KC_PGDN, _______, _______),
+
+   /* Layer HHKB: HHKB mode (HHKB Fn)
+      |------+-----+-----+-----+----+----+----+----+-----+-----+-----+-----+-------+-------+-----|
+      | Pwr  | F1  | F2  | F3  | F4 | F5 | F6 | F7 | F8  | F9  | F10 | F11 | F12   | Ins   | Del |
+      |------+-----+-----+-----+----+----+----+----+-----+-----+-----+-----+-------+-------+-----|
+      | Caps |     |     |     |    |    |    |    | Psc | Slk | Pus | Up  |       | Backs |     |
+      |------+-----+-----+-----+----+----+----+----+-----+-----+-----+-----+-------+-------+-----|
+      |      | VoD | VoU | Mut |    |    | *  | /  | Hom | PgU | Lef | Rig | Enter |       |     |
+      |------+-----+-----+-----+----+----+----+----+-----+-----+-----+-----+-------+-------+-----|
+      |      |     |     |     |    |    | +  | -  | End | PgD | Dow |     |       |       |     |
+      |------+-----+-----+-----+----+----+----+----+-----+-----+-----+-----+-------+-------+-----|
+
+                 |------+------+----------------------+------+------+
+                 | **** | **** | ******************** | **** | **** |
+                 |------+------+----------------------+------+------+
+
+     */
+
+    [MOUS] = LAYOUT(
+        _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+        _______, KC_MS_BTN1, KC_MS_UP, KC_MS_BTN2, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+        _______, KC_MS_LEFT, KC_MS_DOWN, KC_MS_RIGHT, KC_MS_WH_UP, _______, _______, _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, KC_MS_WH_DOWN, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+        _______, _______, _______, _______, _______)
+
+};
+
+// Convenience methods
 
 bool mod_down(uint16_t key_code)
 {
   return keyboard_report->mods & MOD_BIT(key_code);
 }
 
+void tap_keys(int arg_n, ...) {
+  va_list arguments;
+  va_start(arguments, arg_n);
+  for (int x = 0; x < arg_n; x++) {
+    uint8_t key_code = va_arg(arguments, int);
+    tap_code(key_code);
+  }
+  va_end(arguments);
+}
+
+void reg_keys(int arg_n, ...) {
+  va_list arguments;
+  va_start(arguments, arg_n);
+  for (int x = 0; x < arg_n; x++) {
+    uint8_t key_code = va_arg(arguments, int);
+    register_code(key_code);
+  }
+  va_end(arguments);
+}
+
+void ureg_keys(int arg_n, ...) {
+  va_list arguments;
+  va_start(arguments, arg_n);
+  for (int x = 0; x < arg_n; x++) {
+    uint8_t key_code = va_arg(arguments, int);
+    unregister_code(key_code);
+  }
+  va_end(arguments);
+}
+
+
 const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
 {
-    // MACRODOWN only works in this function
     bool pressed = record->event.pressed;
-    bool altDown = mod_down(KC_RALT) || mod_down(KC_LALT);
-    bool cmdDown = mod_down(KC_RGUI) || mod_down(KC_LGUI);
-    bool lShiftDown = mod_down(KC_LSHIFT);
-    bool rShiftDown = mod_down(KC_RSHIFT);
-    bool shiftDown = lShiftDown || rShiftDown;
+    bool alt_down = mod_down(KC_RALT) || mod_down(KC_LALT);
+    bool cmd_down = mod_down(KC_RGUI) || mod_down(KC_LGUI);
+    bool lshift_down = mod_down(KC_LSHIFT);
+    bool rshift_down = mod_down(KC_RSHIFT);
+    bool shift_down = lshift_down || rshift_down;
     switch (id)
     {
     case HHKB:
@@ -93,33 +157,33 @@ const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
     // Moving Æ from alt+right quote to alt+e, to bring it in line with ø and å
     case M_NORWEGIAN_AE:
       pressed
-        ? register_code(altDown ? KC_QUOT : KC_E)
-        : unregister_code(altDown ? KC_QUOT : KC_E);
+        ? register_code(alt_down ? KC_QUOT : KC_E)
+        : unregister_code(alt_down ? KC_QUOT : KC_E);
       break;
     // Moving accent dead key to where æ was moved from
     case M_ACCENT_MOVED:
       pressed
-        ? register_code(altDown ? KC_E : KC_QUOT)
-        : unregister_code(altDown ? KC_E : KC_QUOT);
+        ? register_code(alt_down ? KC_E : KC_QUOT)
+        : unregister_code(alt_down ? KC_E : KC_QUOT);
         break;
     // Tapping backspace when either shift is held turns 
     // it into a delete, matching Apple keyboard behaviour
     case M_SHFT_BSPC_IS_DELETE:
-      if (shiftDown && pressed) {
+      if (shift_down && pressed) {
         // Turn shift off momentarily
-        unregister_code(lShiftDown ? KC_LSHIFT : KC_RSHIFT);
-        register_code(KC_DEL);
-        register_code(lShiftDown ? KC_LSHIFT : KC_RSHIFT);
+        unregister_code(lshift_down ? KC_LSHIFT : KC_RSHIFT);
+        reg_keys(2, KC_DEL, lshift_down ? KC_LSHIFT : KC_RSHIFT);
       } else {
         pressed
-          ? register_code(shiftDown ? KC_DEL : KC_BSPC)
-          : unregister_code(shiftDown ? KC_DEL : KC_BSPC);
+          ? register_code(shift_down ? KC_DEL : KC_BSPC)
+          : unregister_code(shift_down ? KC_DEL : KC_BSPC);
       }
       break;
     case M_ESC_IS_GRAVE_WITH_CMD:
       pressed
-        ? register_code(cmdDown ? KC_GRV : KC_ESC)
-        : unregister_code(cmdDown ? KC_GRV : KC_ESC);
+        ? register_code(cmd_down ? KC_GRV : KC_ESC)
+        : unregister_code(cmd_down ? KC_GRV : KC_ESC);
+      break;
     }
     return MACRO_NONE;
 };
@@ -133,12 +197,12 @@ void fsharp_pipe(qk_tap_dance_state_t *state, void *user_data) {
     if (mod_down(KC_LSHIFT) || mod_down(KC_RSHIFT))
     {
       // Fsharp |> pipe character
-      register_code(KC_BSLS); unregister_code(KC_BSLS); register_code(KC_DOT); unregister_code(KC_DOT);
+      tap_keys(2, KC_BSLS, KC_DOT);
     }
     else
     {
       // Just two dots. TODO: Is there a way to return false, so as not to have to return this?
-      register_code(KC_DOT); unregister_code(KC_DOT); register_code(KC_DOT); unregister_code(KC_DOT);
+      tap_keys(2, KC_DOT, KC_DOT);
     }
 
     break;
