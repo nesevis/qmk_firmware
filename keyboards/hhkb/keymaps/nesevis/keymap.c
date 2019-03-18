@@ -49,7 +49,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_TAB, KC_Q, KC_W, M(M_NORWEGIAN_AE), KC_R, KC_T, KC_Y, KC_U, KC_I, KC_O, KC_P, TD(TD_LBRC_LPRN), TD(TD_RBRC_RPRN), M(M_SHFT_BSPC_IS_DELETE),
         KC_LCTL, KC_A, KC_S, KC_D, KC_F, KC_G, KC_H, KC_J, KC_K, KC_L, KC_SCLN, M(M_ACCENT_MOVED), KC_ENT,
         KC_LSFT, KC_Z, KC_X, KC_C, KC_V, KC_B, KC_N, KC_M, KC_COMM, TD(TD_RABK_FSHARP_PIPE), KC_SLSH, KC_RSFT, MO(HHKB),
-        KC_LALT, KC_LGUI, /*        */ LT(MOUS, KC_SPC), KC_RGUI, KC_RALT),
+        KC_LALT, KC_LGUI, /*        */ KC_SPC, KC_RGUI, KC_RALT),
 
     /* Layer HHKB: HHKB mode (HHKB Fn)
       |------+-----+-----+-----+----+----+----+----+-----+-----+-----+-----+-------+-------+-----|
@@ -70,12 +70,12 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
     [HHKB] = LAYOUT(
         KC_PWR, KC_PAUS, KC_SLCK, KC_F3, KC_F4, KC_F5, KC_F6, KC_MRWD, KC_MPLY, KC_MFFD, KC_MUTE, KC_VOLD, KC_VOLU, KC_INS, KC_DEL,
-        KC_CAPS, _______, _______, _______, _______, _______, _______, _______, KC_PSCR, KC_SLCK, KC_PAUS, KC_UP, _______, KC_BSPC,
-        _______, KC_VOLD, KC_VOLU, KC_MUTE, _______, _______, KC_PAST, KC_PSLS, KC_HOME, KC_PGUP, KC_LEFT, KC_RGHT, KC_PENT,
-        _______, _______, _______, _______, _______, _______, KC_PPLS, KC_PMNS, KC_END, KC_PGDN, KC_DOWN, _______, _______,
+        KC_CAPS, KC_MS_BTN1, KC_MS_UP, KC_MS_BTN2, _______, _______, _______, _______, KC_PSCR, KC_SLCK, KC_PAUS, KC_UP, _______, KC_BSPC,
+        _______, KC_MS_LEFT, KC_MS_DOWN, KC_MS_RIGHT, KC_MS_WH_UP, _______, KC_PAST, KC_PSLS, KC_HOME, KC_PGUP, KC_LEFT, KC_RGHT, KC_PENT,
+        _______, _______, _______, KC_MS_WH_DOWN, _______, _______, KC_PPLS, KC_PMNS, KC_END, KC_PGDN, KC_DOWN, _______, _______,
         _______, _______, KC_PGDN, _______, _______),
 
-    [MOUS] = LAYOUT(
+    [MOUS] = LAYOUT( // Removed in favour of keeping the space key as is.
         _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
         _______, KC_MS_BTN1, KC_MS_UP, KC_MS_BTN2, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
         _______, KC_MS_LEFT, KC_MS_DOWN, KC_MS_RIGHT, KC_MS_WH_UP, _______, _______, _______, _______, _______, _______, _______, _______,
