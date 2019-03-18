@@ -101,6 +101,12 @@ void tap_keys(int arg_n, ...) {
   va_end(arguments);
 }
 
+void tap_key(int n, uint16_t key_code) {
+  for (int x = 0; x < n; x++) {
+    tap_code(key_code);
+  }
+}
+
 void reg_keys(int arg_n, ...) {
   va_list arguments;
   va_start(arguments, arg_n);
@@ -172,24 +178,30 @@ const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
 };
 
 void fsharp_pipe(qk_tap_dance_state_t *state, void *user_data) {
+  bool lshift_down = mod_down(KC_LSHIFT);
+  bool rshift_down = mod_down(KC_RSHIFT);
+  bool shift_down = lshift_down || rshift_down;
+
   switch (state->count) {
-  case 1:
-    register_code(KC_DOT); unregister_code(KC_DOT);
-    break;
   case 2:
-    if (mod_down(KC_LSHIFT) || mod_down(KC_RSHIFT))
+    if (shift_down) {
+      // => {}
+      unregister_code(lshift_down ? KC_LSHIFT : KC_RSHIFT);
+      register_code(KC_EQL);
+      unregister_code(KC_EQL);
+      register_code(lshift_down ? KC_LSHIFT : KC_RSHIFT);
+      tap_keys(4, KC_DOT, KC_SPC, KC_LBRC, KC_RBRC);
+      return;
+    }
+  case 3:
+    if (shift_down)
     {
       // Fsharp |> pipe character
       tap_keys(2, KC_BSLS, KC_DOT);
+      return;
     }
-    else
-    {
-      // Just two dots. TODO: Is there a way to return false, so as not to have to return this?
-      tap_keys(2, KC_DOT, KC_DOT);
-    }
-
-    break;
   }
+  tap_key(state->count, KC_DOT);
 }
 
 qk_tap_dance_action_t tap_dance_actions[] = {
