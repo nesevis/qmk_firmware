@@ -177,9 +177,6 @@ const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
     return MACRO_NONE;
 };
 
-void dance_cln_finished (qk_tap_dance_state_t *state, void *user_data) {
-}
-
 void programming_tap_dance(qk_tap_dance_state_t *state, void *user_data) {
   bool lshift_down = state->weak_mods & MOD_BIT(KC_LSHIFT);
   bool rshift_down = state->weak_mods & MOD_BIT(KC_RSHIFT);
