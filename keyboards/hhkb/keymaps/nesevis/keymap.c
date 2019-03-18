@@ -177,25 +177,24 @@ const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
     return MACRO_NONE;
 };
 
-void fsharp_pipe(qk_tap_dance_state_t *state, void *user_data) {
-  bool lshift_down = mod_down(KC_LSHIFT);
-  bool rshift_down = mod_down(KC_RSHIFT);
+void dance_cln_finished (qk_tap_dance_state_t *state, void *user_data) {
+}
+
+void programming_tap_dance(qk_tap_dance_state_t *state, void *user_data) {
+  bool lshift_down = state->weak_mods & MOD_BIT(KC_LSHIFT);
+  bool rshift_down = state->weak_mods & MOD_BIT(KC_RSHIFT);
   bool shift_down = lshift_down || rshift_down;
 
   switch (state->count) {
   case 2:
-    if (shift_down) {
-      // => {}
-      unregister_code(lshift_down ? KC_LSHIFT : KC_RSHIFT);
-      register_code(KC_EQL);
-      unregister_code(KC_EQL);
-      register_code(lshift_down ? KC_LSHIFT : KC_RSHIFT);
-      tap_keys(4, KC_DOT, KC_SPC, KC_LBRC, KC_RBRC);
+    if (shift_down && !state->pressed) {
+      // => {} — Using the keypad equals sign because = shifted is +
+      // and there didn't seem to be any non-hacky way of implementing it otherwise.
+      tap_keys(6, KC_KP_EQUAL, KC_DOT, KC_SPC, KC_LBRC, KC_RBRC, KC_LEFT);
       return;
     }
   case 3:
-    if (shift_down)
-    {
+    if (shift_down && !state->pressed) {
       // Fsharp |> pipe character
       tap_keys(2, KC_BSLS, KC_DOT);
       return;
@@ -208,6 +207,6 @@ qk_tap_dance_action_t tap_dance_actions[] = {
     // Tap once for Esc, twice for Caps Lock
     [TD_LBRC_LPRN] = ACTION_TAP_DANCE_DOUBLE(KC_LBRC, KC_LPRN),
     [TD_RBRC_RPRN] = ACTION_TAP_DANCE_DOUBLE(KC_RBRC, KC_RPRN),
-    [TD_RABK_FSHARP_PIPE] = ACTION_TAP_DANCE_FN(fsharp_pipe),
+    [TD_RABK_FSHARP_PIPE] = ACTION_TAP_DANCE_FN(programming_tap_dance),
 
 };
