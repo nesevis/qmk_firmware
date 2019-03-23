@@ -69,10 +69,10 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      */
 
     [HHKB] = LAYOUT(
-        KC_PWR, KC_PAUS, KC_SLCK, KC_F3, KC_F4, KC_F5, KC_F6, KC_MRWD, KC_MPLY, KC_MFFD, KC_MUTE, KC_VOLD, KC_VOLU, KC_INS, KC_DEL,
-        KC_CAPS, KC_MS_BTN1, KC_MS_UP, KC_MS_BTN2, _______, _______, _______, _______, KC_PSCR, KC_SLCK, KC_PAUS, KC_UP, _______, KC_BSPC,
-        _______, KC_MS_LEFT, KC_MS_DOWN, KC_MS_RIGHT, KC_MS_WH_UP, _______, KC_PAST, KC_PSLS, KC_HOME, KC_PGUP, KC_LEFT, KC_RGHT, KC_PENT,
-        _______, _______, _______, KC_MS_WH_DOWN, _______, _______, KC_PPLS, KC_PMNS, KC_END, KC_PGDN, KC_DOWN, _______, _______,
+        KC_PWR, KC_SLCK, KC_PAUS, KC_F3, KC_F4, KC_F5, KC_F6, KC_MRWD, KC_MPLY, KC_MFFD, KC_MUTE, KC_VOLD, KC_VOLU, KC_INS, KC_DEL,
+        KC_CAPS, KC_MS_BTN1, KC_MS_UP, KC_MS_BTN2, KC_MS_WH_UP, _______, _______, _______, KC_PSCR, KC_SLCK, KC_PAUS, KC_UP, _______, KC_BSPC,
+        _______, KC_MS_LEFT, KC_MS_DOWN, KC_MS_RIGHT, KC_MS_WH_DOWN, _______, KC_PAST, KC_PSLS, KC_HOME, KC_PGUP, KC_LEFT, KC_RGHT, KC_PENT,
+        _______, _______, _______, _______, _______, _______, KC_PPLS, KC_PMNS, KC_END, KC_PGDN, KC_DOWN, _______, _______,
         _______, _______, KC_PGDN, _______, _______),
 
     [MOUS] = LAYOUT( // Removed in favour of keeping the space key as is.
@@ -155,7 +155,7 @@ const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
         ? register_code(alt_down ? KC_E : KC_QUOT)
         : unregister_code(alt_down ? KC_E : KC_QUOT);
         break;
-    // Tapping backspace when either shift is held turns 
+    // Tapping backspace when either shift is held turns
     // it into a delete, matching Apple keyboard behaviour
     case M_SHFT_BSPC_IS_DELETE:
       if (shift_down && pressed) {
@@ -187,7 +187,7 @@ void programming_tap_dance(qk_tap_dance_state_t *state, void *user_data) {
     if (shift_down && !state->pressed) {
       // => {} — Using the keypad equals sign because = shifted is +
       // and there didn't seem to be any non-hacky way of implementing it otherwise.
-      tap_keys(6, KC_KP_EQUAL, KC_DOT, KC_SPC, KC_LBRC, KC_RBRC, KC_LEFT);
+      tap_keys(3, KC_KP_EQUAL, KC_DOT, KC_SPC);
       return;
     }
   case 3:
