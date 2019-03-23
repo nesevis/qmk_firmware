@@ -29,5 +29,3 @@ bool circular_buffer_matches(int num_args, ...) {
   va_end(arguments);
   return match;
 }
-
-

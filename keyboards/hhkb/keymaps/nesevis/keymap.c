@@ -208,10 +208,8 @@ qk_tap_dance_action_t tap_dance_actions[] = {
     [TD_RABK_FSHARP_PIPE] = ACTION_TAP_DANCE_FN(programming_tap_dance),
 };
 
-// Listening for every tap
-bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  if (record->event.pressed && keycode == KC_TAB && !keyboard_report->mods) {
-    if (circular_buffer_matches(2, KC_Q, KC_S)) {
+bool handle_expansions(void) {
+  if (circular_buffer_matches(2, KC_Q, KC_S)) {
       tap_key(2, KC_BSPC); // Remove Q and S
       SEND_STRING("switch()\n{\n\tdefault:\n\t\tbreak;\n} ");
       return false;
@@ -231,6 +229,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       SEND_STRING("Regards,\nChris Kolbu ");
       return false;
     }
+    return true;
+}
+
+// Listening for every tap
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  if (record->event.pressed && keycode == KC_TAB && !keyboard_report->mods) {
+    return handle_expansions();
   } else if (record->event.pressed) {
     circular_buffer_add(keycode);
   }
