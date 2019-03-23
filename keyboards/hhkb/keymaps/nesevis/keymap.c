@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include "circular_buffer.h"
 
 #define _______ KC_TRNS
 
@@ -205,5 +206,41 @@ qk_tap_dance_action_t tap_dance_actions[] = {
     [TD_LBRC_LPRN] = ACTION_TAP_DANCE_DOUBLE(KC_LBRC, KC_LPRN),
     [TD_RBRC_RPRN] = ACTION_TAP_DANCE_DOUBLE(KC_RBRC, KC_RPRN),
     [TD_RABK_FSHARP_PIPE] = ACTION_TAP_DANCE_FN(programming_tap_dance),
-
 };
+
+// Listening for every tap
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+  if (record->event.pressed && keycode == KC_TAB && !keyboard_report->mods) {
+    if (circular_buffer_matches(2, KC_Q, KC_S)) {
+      tap_key(2, KC_BSPC); // Remove Q and S
+      SEND_STRING("switch()\n{\n\tdefault:\n\t\tbreak;\n} ");
+      return false;
+    }
+    else if (circular_buffer_matches(2, KC_Q, KC_L)) {
+      tap_key(2, KC_BSPC);
+      SEND_STRING("() => {}");
+      return false;
+    }
+    else if (circular_buffer_matches(2, KC_Q, KC_T)) {
+      tap_key(2, KC_BSPC);
+      SEND_STRING("try\n{\n}\ncatch(Exception ex) \n{\n} ");
+      return false;
+    }
+    else if (circular_buffer_matches(2, KC_Q, KC_R)) {
+      tap_key(2, KC_BSPC);
+      SEND_STRING("Regards,\nChris Kolbu ");
+      return false;
+    }
+  } else if (record->event.pressed) {
+    circular_buffer_add(keycode);
+  }
+  return true;
+}
+
+void keyboard_post_init_user(void) {
+  // Customise these values to desired behaviour
+  debug_enable=false;
+  debug_matrix=false;
+  //debug_keyboard=true;
+  //debug_mouse=true;
+}
