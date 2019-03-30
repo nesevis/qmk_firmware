@@ -234,7 +234,7 @@ bool handle_expansions(void) {
 
 // Listening for every tap
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-  if (record->event.pressed && keycode == KC_TAB && !keyboard_report->mods) {
+  if (record->event.pressed && keycode == KC_LCTL && !keyboard_report->mods) {
     return handle_expansions();
   } else if (record->event.pressed) {
     circular_buffer_add(keycode);
